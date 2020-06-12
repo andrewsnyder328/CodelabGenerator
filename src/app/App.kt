@@ -1,25 +1,75 @@
 package app
 
+import ContentItem
+import components.chakra.Stack
+import components.content.Step
+import model.StepModel
+import kotlinx.html.js.onClickFunction
 import react.*
 import react.dom.*
-import logo.*
-import ticker.*
+import util.setProps
+import util.uuidv4
 
-class App : RComponent<RProps, RState>() {
+interface AppState : RState {
+    var steps: MutableList<StepModel>
+}
+
+class App : RComponent<RProps, AppState>() {
+
+    override fun AppState.init() {
+        steps = mutableListOf()
+    }
+
     override fun RBuilder.render() {
-        div("App-header") {
-            logo()
-            h2 {
-                +"Welcome to React with Kotlin"
+        Stack {
+            setProps {
+                spacing = "12px"
+            }
+            state.steps.forEachIndexed { index, stepModel ->
+                Step(stepModel,
+                        onDeleteStep = ::deleteStep,
+                        onStepUpdated = ::onStepUpdated,
+                        onContentUpdated = ::onContentUpdated)
+            }
+
+            button {
+                +"Add New Step"
+                this.attrs.onClickFunction = {
+                    addStep()
+                }
             }
         }
-        p("App-intro") {
-            +"To get started, edit "
-            code { +"app/App.kt" }
-            +" and save to reload."
+    }
+
+    private fun onContentUpdated(stepId: String, contentItems: MutableList<ContentItem>) {
+        setState {
+            steps.apply {
+                find { it.id == stepId }?.contentItems = contentItems
+            }
         }
-        p("App-ticker") {
-            ticker()
+    }
+
+    private fun onStepUpdated(stepModel: StepModel) {
+        setState {
+            steps.apply {
+                set(indexOfFirst { it.id == stepModel.id }, stepModel)
+            }
+        }
+    }
+
+    private fun addStep() {
+        setState {
+            steps = steps.apply { add(StepModel(uuidv4(), "New Step", mutableListOf())) }
+        }
+    }
+
+    private fun deleteStep(id: String) {
+        setState {
+            steps = state.steps.apply {
+                removeAll {
+                    it.id == id
+                }
+            }
         }
     }
 }
