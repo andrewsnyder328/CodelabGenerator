@@ -1,7 +1,7 @@
 @file:JsModule("@chakra-ui/core/dist/CSSReset")
 @file:JsNonModule
 
-package view.components.chakra
+package components.chakra
 
 import react.RClass
 import react.RProps

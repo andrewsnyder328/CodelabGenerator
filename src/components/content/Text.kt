@@ -1,7 +1,7 @@
 package components.content
 
 import components.chakra.Stack
-import model.HeaderModel
+import model.TextModel
 import react.RBuilder
 import util.addText
 import util.setOnChangeListener
@@ -9,23 +9,24 @@ import util.setOnClickListener
 import util.setProps
 import components.chakra.Button
 import components.chakra.Input
+import components.chakra.TextArea
 
-fun RBuilder.Header(headerModel: HeaderModel, onUpdateItem: (HeaderModel) -> Unit, onDeleteItem: (String) -> Unit) {
+fun RBuilder.Text(textModel: TextModel, onUpdateItem: (TextModel) -> Unit, onDeleteItem: (String) -> Unit) {
     Stack {
         setProps {
             isInline = true
             alignItems = "center"
         }
         components.chakra.Text {
-            addText("Header:")
+            addText("Text:")
         }
-        Input {
+        TextArea {
             setProps {
-                value = headerModel.title
+                value = textModel.value
             }
             setOnChangeListener {
-                onUpdateItem(headerModel.apply {
-                    title = it.target.asDynamic().value
+                onUpdateItem(textModel.apply {
+                    value = it.target.asDynamic().value
                 })
             }
         }
@@ -33,7 +34,7 @@ fun RBuilder.Header(headerModel: HeaderModel, onUpdateItem: (HeaderModel) -> Uni
         Button {
             +"Delete"
             setOnClickListener {
-                onDeleteItem(headerModel.id)
+                onDeleteItem(textModel.id)
             }
         }
     }

@@ -1,18 +1,14 @@
 package components.content
 
 import ContentItem
-import kotlinx.html.js.onClickFunction
-import model.HeaderModel
-import model.StepModel
+import components.chakra.Select
 import react.*
-import react.dom.button
-import util.setOnChangeListener
-import util.setProps
-import view.components.chakra.Input
+import components.chakra.Input
 import components.chakra.Stack
-import util.setOnClickListener
-import util.uuidv4
-import view.components.chakra.Button
+import react.dom.option
+import util.*
+import components.chakra.Button
+import model.*
 
 fun RBuilder.Step(step: StepModel,
                   onDeleteStep: (String) -> Unit,
@@ -31,6 +27,7 @@ fun RBuilder.Step(step: StepModel,
             Input {
                 setProps {
                     value = step.stepName
+                    w = "300px"
                 }
                 setOnChangeListener {
                     onStepUpdated(step.apply {
@@ -42,15 +39,42 @@ fun RBuilder.Step(step: StepModel,
                 +"Add Content Item"
                 this.setOnClickListener {
                     onContentUpdated(step.id, step.contentItems.apply {
-                        add(HeaderModel(uuidv4(), "Header"))
+                        when (step.selectedContentType) {
+                            "header" -> {
+                                add(HeaderModel(uuidv4(), "Header"))
+                            }
+                            "text" -> {
+                                add(TextModel(uuidv4(), "Text"))
+                            }
+                            "youtube_link" -> {
+                                add(YTLModel(uuidv4(), "link", "https://www.youtube.com"))
+                            }
+                            "image" -> {
+                                add(ImageModel(uuidv4(), "link", ""))
+                            }
+                        }
                     })
                 }
             }
-            Button {
-                +"Delete Step"
-                this.setOnClickListener {
-                    onDeleteStep(step.id)
+            Select {
+                setProps {
+                    value = step.selectedContentType
+                    w = "150px"
                 }
+                ContentType.values().forEach {
+                    option {
+                        setProps {
+                            value = it.value
+                        }
+                        addText(it.Text)
+                    }
+                }
+                setOnChangeListener {
+                    onStepUpdated(step.apply {
+                        selectedContentType = it.target.asDynamic().value
+                    })
+                }
+
             }
         }
         step.contentItems.forEach {
@@ -70,8 +94,66 @@ fun RBuilder.Step(step: StepModel,
                             }
                     )
                 }
+                is TextModel -> {
+                    Text(
+                            it,
+                            onUpdateItem = {textModel ->
+                                onContentUpdated(step.id, step.contentItems.apply {
+                                    (find { it.id == textModel.id } as TextModel).value = textModel.value
+                                })
+                            },
+                            onDeleteItem = { id ->
+                                onContentUpdated(step.id, step.contentItems.apply {
+                                    removeAll { it.id == id }
+                                })
+                            }
+                    )
+                }
+                is YTLModel -> {
+                    YoutubeLink(
+                            it,
+                            onUpdateItem = {ytlModel ->
+                                onContentUpdated(step.id, step.contentItems.apply {
+                                    (find { it.id == ytlModel.id } as YTLModel).text = ytlModel.text
+                                })
+                            },
+                            onDeleteItem = { id ->
+                                onContentUpdated(step.id, step.contentItems.apply {
+                                    removeAll { it.id == id }
+                                })
+                            }
+                    )
+                }
+                is ImageModel -> {
+                    Image(
+                            it,
+                            onUpdateItem = {imageModel ->
+                                onContentUpdated(step.id, step.contentItems.apply {
+                                    (find { it.id == imageModel.id } as YTLModel).text = imageModel.text
+                                })
+                            },
+                            onDeleteItem = { id ->
+                                onContentUpdated(step.id, step.contentItems.apply {
+                                    removeAll { it.id == id }
+                                })
+                            }
+                    )
+                }
+            }
+        }
+        Button {
+            +"Delete Step"
+            this.setOnClickListener {
+                onDeleteStep(step.id)
             }
         }
     }
+}
+
+enum class ContentType(val value: String, val Text: String) {
+    HEADER("header", "Header"),
+    TEXT("text", "Text"),
+    YOUTUBE_LINK("youtube_link", "YouTube Link"),
+    IMAGE("image", "Image")
 }
 

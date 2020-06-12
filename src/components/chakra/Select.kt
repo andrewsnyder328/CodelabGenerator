@@ -1,4 +1,4 @@
-@file:JsModule("@chakra-ui/core/dist/Input")
+@file:JsModule("@chakra-ui/core/dist/Select")
 @file:JsNonModule
 
 package components.chakra
@@ -7,4 +7,4 @@ import react.RClass
 import react.RProps
 
 @JsName("default") // because it was exported as default
-external val Input: RClass<RProps>
+external val Select: RClass<RProps>
