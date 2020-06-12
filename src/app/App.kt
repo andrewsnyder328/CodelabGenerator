@@ -4,11 +4,11 @@ import ContentItem
 import components.chakra.Stack
 import components.content.Step
 import model.StepModel
-import kotlinx.html.js.onClickFunction
 import react.*
-import react.dom.*
+import util.setOnClickListener
 import util.setProps
 import util.uuidv4
+import view.components.chakra.Button
 
 interface AppState : RState {
     var steps: MutableList<StepModel>
@@ -32,9 +32,9 @@ class App : RComponent<RProps, AppState>() {
                         onContentUpdated = ::onContentUpdated)
             }
 
-            button {
+            Button {
                 +"Add New Step"
-                this.attrs.onClickFunction = {
+                this.setOnClickListener {
                     addStep()
                 }
             }

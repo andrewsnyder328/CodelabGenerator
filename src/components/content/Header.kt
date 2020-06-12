@@ -1,17 +1,35 @@
 package components.content
 
-import kotlinx.html.js.onClickFunction
+import components.chakra.Stack
+import model.HeaderModel
 import react.RBuilder
-import react.dom.button
-import react.dom.div
+import util.setOnChangeListener
+import util.setOnClickListener
+import util.setProps
+import view.components.chakra.Button
+import view.components.chakra.Input
 
-fun RBuilder.Header(id: String, onDeleteItem: (String) -> Unit) {
-    div {
-        +"Header"
-        button {
+fun RBuilder.Header(headerModel: HeaderModel, onUpdateItem: (HeaderModel) -> Unit, onDeleteItem: (String) -> Unit) {
+    Stack {
+        setProps {
+            isInline = true
+            alignItems = "center"
+        }
+        Input {
+            setProps {
+                value = headerModel.title
+            }
+            setOnChangeListener {
+                onUpdateItem(headerModel.apply {
+                    title = it.target.asDynamic().value
+                })
+            }
+        }
+
+        Button {
             +"Delete"
-            attrs.onClickFunction = {
-                onDeleteItem(id)
+            setOnClickListener {
+                onDeleteItem(headerModel.id)
             }
         }
     }

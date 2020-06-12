@@ -10,7 +10,9 @@ import util.setOnChangeListener
 import util.setProps
 import view.components.chakra.Input
 import components.chakra.Stack
+import util.setOnClickListener
 import util.uuidv4
+import view.components.chakra.Button
 
 fun RBuilder.Step(step: StepModel,
                   onDeleteStep: (String) -> Unit,
@@ -31,23 +33,22 @@ fun RBuilder.Step(step: StepModel,
                     value = step.stepName
                 }
                 setOnChangeListener {
-                    val newValue = it.target.asDynamic().value
                     onStepUpdated(step.apply {
-                        stepName = newValue
+                        stepName = it.target.asDynamic().value
                     })
                 }
             }
-            button {
+            Button {
                 +"Add Content Item"
-                this.attrs.onClickFunction = {
+                this.setOnClickListener {
                     onContentUpdated(step.id, step.contentItems.apply {
                         add(HeaderModel(uuidv4(), "Header"))
                     })
                 }
             }
-            button {
+            Button {
                 +"Delete Step"
-                this.attrs.onClickFunction = {
+                this.setOnClickListener {
                     onDeleteStep(step.id)
                 }
             }
@@ -55,11 +56,19 @@ fun RBuilder.Step(step: StepModel,
         step.contentItems.forEach {
             when(it) {
                 is HeaderModel -> {
-                    Header(it.id) { id ->
-                        onContentUpdated(step.id, step.contentItems.apply {
-                            removeAll { it.id == id }
-                        })
-                    }
+                    Header(
+                            it,
+                            onUpdateItem = {headerModel ->
+                                onContentUpdated(step.id, step.contentItems.apply {
+                                    (find { it.id == headerModel.id } as HeaderModel).title = headerModel.title
+                                })
+                            },
+                            onDeleteItem = { id ->
+                                onContentUpdated(step.id, step.contentItems.apply {
+                                    removeAll { it.id == id }
+                                })
+                            }
+                    )
                 }
             }
         }
