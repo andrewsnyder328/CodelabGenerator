@@ -1,20 +1,16 @@
 package app
 
 import ContentItem
-import components.chakra.Stack
+import components.chakra.*
 import components.content.Step
 import model.StepModel
 import react.*
-import util.setOnChangeListener
-import util.setOnClickListener
-import util.setProps
-import util.uuidv4
-import components.chakra.Button
-import components.chakra.Input
+import util.*
 
 interface AppState : RState {
     var steps: MutableList<StepModel>
     var codelabName: String
+    var generatedMarkdown: String
 }
 
 class App : RComponent<RProps, AppState>() {
@@ -28,6 +24,7 @@ class App : RComponent<RProps, AppState>() {
         Stack {
             setProps {
                 spacing = "12px"
+                height = "100%"
             }
             Input {
                 setProps {
@@ -59,7 +56,15 @@ class App : RComponent<RProps, AppState>() {
             Button {
                 +"Generate"
                 this.setOnClickListener {
-                    console.log("Generate")
+                    processMarkdown()
+                }
+            }
+
+            TextArea {
+                setProps {
+                    value = state.generatedMarkdown
+                    minH = "400px"
+                    height = "100%"
                 }
             }
         }
@@ -83,7 +88,7 @@ class App : RComponent<RProps, AppState>() {
 
     private fun addStep() {
         setState {
-            steps = steps.apply { add(StepModel(uuidv4(), "New Step", "header", mutableListOf())) }
+            steps = steps.apply { add(StepModel(uuidv4(), 1, "New Step", "header", mutableListOf())) }
         }
     }
 
@@ -94,6 +99,22 @@ class App : RComponent<RProps, AppState>() {
                     it.id == id
                 }
             }
+        }
+    }
+
+    private fun processMarkdown() {
+        var markdownString = "#${state.codelabName}"
+        state.steps.forEach {
+            markdownString += "\n\n"
+            markdownString += "##${it.stepName}"
+            markdownString += "\nDuration: ${it.duration}"
+            it.contentItems.forEach {
+                markdownString += "\n\n"
+                markdownString += it.getMarkdown()
+            }
+        }
+        setState {
+            generatedMarkdown = markdownString
         }
     }
 }
