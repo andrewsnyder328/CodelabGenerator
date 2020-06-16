@@ -17,6 +17,7 @@ fun RBuilder.Step(step: StepModel,
 
     Stack {
         setProps {
+            padding = "16px"
             marginTop = "12px"
             backgroundColor = "#E2E2E2"
         }
@@ -142,6 +143,9 @@ fun RBuilder.Step(step: StepModel,
             }
         }
         Button {
+            setProps {
+                variantColor = "red"
+            }
             +"Delete Step"
             this.setOnClickListener {
                 onDeleteStep(step.id)
