@@ -11,6 +11,7 @@ import components.chakra.Button
 import components.chakra.Input
 import components.chakra.TextArea
 
+//TODO refactor out into generic base component
 fun RBuilder.Text(textModel: TextModel, onUpdateItem: (TextModel) -> Unit, onDeleteItem: (String) -> Unit) {
     Stack {
         setProps {

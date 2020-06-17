@@ -10,6 +10,7 @@ import util.setProps
 import components.chakra.Button
 import components.chakra.Input
 
+//TODO refactor out into generic base component
 fun RBuilder.Header(headerModel: HeaderModel, onUpdateItem: (HeaderModel) -> Unit, onDeleteItem: (String) -> Unit) {
     Stack {
         setProps {

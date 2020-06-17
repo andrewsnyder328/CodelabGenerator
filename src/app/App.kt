@@ -51,11 +51,19 @@ class App : RComponent<RProps, AppState>() {
                     }
 
                     state.steps.forEach {
-                        StepTitle(it) {
-                            setState {
-                                selectedStep = it
+                        StepTitle(it,
+                            onStepClicked = {
+                                setState {
+                                    selectedStep = it
+                                }
+                            },
+                            onMoveUp = {
+                                onMoveUp(it)
+                            },
+                            onMoveDown = {
+                                onMoveDown(it)
                             }
-                        }
+                        )
                     }
 
                     Button {
@@ -105,6 +113,28 @@ class App : RComponent<RProps, AppState>() {
                     height = "100%"
                     placeholder = "This is where the generated markdown will go"
                 }
+            }
+        }
+    }
+
+    private fun onMoveUp(step: StepModel) {
+        val position = if (state.steps.indexOf(step) > 0) state.steps.indexOf(step) - 1 else 0
+
+        setState {
+            steps = steps.apply {
+                remove(step)
+                add(position, step)
+            }
+        }
+    }
+
+    private fun onMoveDown(step: StepModel) {
+        val position = if (state.steps.indexOf(step) < state.steps.size - 1) state.steps.indexOf(step) + 1 else state.steps.size - 1
+
+        setState {
+            steps = steps.apply {
+                remove(step)
+                add(position, step)
             }
         }
     }

@@ -13,6 +13,7 @@ import components.chakra.TextArea
 import model.ImageModel
 import model.YTLModel
 
+//TODO refactor out into generic base component
 fun RBuilder.Image(imageModel: ImageModel, onUpdateItem: (ImageModel) -> Unit, onDeleteItem: (String) -> Unit) {
     Stack {
         setProps {

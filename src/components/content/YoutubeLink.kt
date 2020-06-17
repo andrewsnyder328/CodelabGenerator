@@ -12,6 +12,7 @@ import components.chakra.Input
 import components.chakra.TextArea
 import model.YTLModel
 
+//TODO refactor out into generic base component
 fun RBuilder.YoutubeLink(ytlModel: YTLModel, onUpdateItem: (YTLModel) -> Unit, onDeleteItem: (String) -> Unit) {
     Stack {
         setProps {
