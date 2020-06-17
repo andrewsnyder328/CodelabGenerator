@@ -2,7 +2,7 @@ package model
 
 import ContentItem
 
-class ImageModel(id: String, var text: String, var link: String): ContentItem(id) {
+class ImageModel(var text: String, var link: String): ContentItem() {
     override fun getMarkdown(): String {
         return "[${text}](${link})"
     }

@@ -1,9 +1,10 @@
 package model
 
 import ContentItem
+import util.uuidv4
 
-class HeaderModel(var title: String): ContentItem() {
+class ListModel: ContentItem() {
     override fun getMarkdown(): String {
-        return "###${title}"
+        return "List"
     }
 }

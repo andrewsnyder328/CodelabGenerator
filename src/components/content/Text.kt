@@ -1,41 +1,27 @@
 package components.content
 
-import components.chakra.Stack
 import model.TextModel
 import react.RBuilder
-import util.addText
 import util.setOnChangeListener
-import util.setOnClickListener
 import util.setProps
-import components.chakra.Button
-import components.chakra.Input
 import components.chakra.TextArea
 
-//TODO refactor out into generic base component
-fun RBuilder.Text(textModel: TextModel, onUpdateItem: (TextModel) -> Unit, onDeleteItem: (String) -> Unit) {
-    Stack {
-        setProps {
-            isInline = true
-            alignItems = "center"
-        }
-        components.chakra.Text {
-            addText("Text:")
-        }
-        TextArea {
-            setProps {
-                value = textModel.value
-            }
-            setOnChangeListener {
-                onUpdateItem(textModel.apply {
-                    value = it.target.asDynamic().value
-                })
-            }
-        }
+class Text<T: TextModel>(builder: RBuilder,
+                             item: T,
+                             val onUpdateItem: (T) -> Unit,
+                             onDeleteItem: (String) -> Unit): BaseContentComponent<T>(builder, item, "Text", item.id, onDeleteItem) {
 
-        Button {
-            +"Delete"
-            setOnClickListener {
-                onDeleteItem(textModel.id)
+    override fun getContent(builder: RBuilder, item: T) {
+        with(builder) {
+            TextArea {
+                setProps {
+                    value = item.value
+                }
+                setOnChangeListener {
+                    onUpdateItem(item.apply {
+                        value = it.target.asDynamic().value
+                    })
+                }
             }
         }
     }

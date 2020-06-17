@@ -42,16 +42,19 @@ fun RBuilder.Step(step: StepModel,
                     onContentUpdated(step.id, step.contentItems.apply {
                         when (step.selectedContentType) {
                             "header" -> {
-                                add(HeaderModel(uuidv4(), "Header"))
+                                add(HeaderModel("Header"))
                             }
                             "text" -> {
-                                add(TextModel(uuidv4(), "Text"))
+                                add(TextModel("Text"))
                             }
                             "youtube_link" -> {
-                                add(YTLModel(uuidv4(), "link", "https://www.youtube.com"))
+                                add(YTLModel("Text", "https://www.youtube.com"))
                             }
                             "image" -> {
-                                add(ImageModel(uuidv4(), "link", ""))
+                                add(ImageModel("Text", "Link"))
+                            }
+                            "list" -> {
+                                add(ListModel())
                             }
                         }
                     })
@@ -82,7 +85,8 @@ fun RBuilder.Step(step: StepModel,
             when(it) {
                 is HeaderModel -> {
                     Header(
-                            it,
+                            this,
+                            item = it,
                             onUpdateItem = {headerModel ->
                                 onContentUpdated(step.id, step.contentItems.apply {
                                     (find { it.id == headerModel.id } as HeaderModel).title = headerModel.title
@@ -97,6 +101,7 @@ fun RBuilder.Step(step: StepModel,
                 }
                 is TextModel -> {
                     Text(
+                            this,
                             it,
                             onUpdateItem = {textModel ->
                                 onContentUpdated(step.id, step.contentItems.apply {
@@ -112,6 +117,7 @@ fun RBuilder.Step(step: StepModel,
                 }
                 is YTLModel -> {
                     YoutubeLink(
+                            this,
                             it,
                             onUpdateItem = {ytlModel ->
                                 onContentUpdated(step.id, step.contentItems.apply {
@@ -127,12 +133,24 @@ fun RBuilder.Step(step: StepModel,
                 }
                 is ImageModel -> {
                     Image(
+                            this,
                             it,
                             onUpdateItem = {imageModel ->
                                 onContentUpdated(step.id, step.contentItems.apply {
-                                    (find { it.id == imageModel.id } as YTLModel).text = imageModel.text
+                                    (find { it.id == imageModel.id } as ImageModel).text = imageModel.text
                                 })
                             },
+                            onDeleteItem = { id ->
+                                onContentUpdated(step.id, step.contentItems.apply {
+                                    removeAll { it.id == id }
+                                })
+                            }
+                    )
+                }
+                is ListModel -> {
+                    List(
+                            this,
+                            it,
                             onDeleteItem = { id ->
                                 onContentUpdated(step.id, step.contentItems.apply {
                                     removeAll { it.id == id }
@@ -158,6 +176,7 @@ enum class ContentType(val value: String, val Text: String) {
     HEADER("header", "Header"),
     TEXT("text", "Text"),
     YOUTUBE_LINK("youtube_link", "YouTube Link"),
-    IMAGE("image", "Image")
+    IMAGE("image", "Image"),
+    LIST("list", "List")
 }
 
